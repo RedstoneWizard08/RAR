@@ -35,7 +35,7 @@ impl Write for FileWriter {
         let mut len = (self.file.unpacked_size - self.bytes_written) as usize;
 
         // when no data needs to be written anymore return 0
-        if len <= 0 {
+        if len == 0 {
             return Ok(0);
         }
 

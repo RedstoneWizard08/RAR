@@ -1,6 +1,4 @@
-use nom;
 use nom::be_u32;
-use std::convert::From;
 use util::get_bit_at;
 use vint::vint;
 
@@ -64,13 +62,15 @@ fn test_header() {
 }
 
 /// Definition of the header block typ
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub enum Typ {
     MainArchive,
     File,
     Service,
     Encryption,
     EndArchive,
+
+    #[default]
     Unknown,
 }
 
@@ -84,12 +84,6 @@ impl From<u64> for Typ {
             5 => Typ::EndArchive,
             _ => Typ::Unknown,
         }
-    }
-}
-
-impl Default for Typ {
-    fn default() -> Typ {
-        Typ::Unknown
     }
 }
 
@@ -149,7 +143,7 @@ impl From<u64> for Flags {
     }
 }
 
-named_attr!(#[doc = "Get a base header"], base_header(&[u8]) -> HeadBlock,
+named_attr!(#[doc = "Get a base header"], pub base_header(&[u8]) -> HeadBlock,
     do_parse!(
         crc: be_u32 >>
         size: vint >>
@@ -158,6 +152,7 @@ named_attr!(#[doc = "Get a base header"], base_header(&[u8]) -> HeadBlock,
         (HeadBlock::new(crc, size, typ.into(), flags.into()))
     )
 );
+
 #[test]
 fn test_base_header() {
     let data = [0xF3, 0xE1, 0x82, 0xEB, 0x0B, 0x01, 0x05, 0x07];

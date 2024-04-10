@@ -7,7 +7,7 @@ readme = "README.md"
 repository = "https://github.com/Roba1993/RAR"
 homepage = "https://github.com/Roba1993/RAR"
 description = """
-edition= "2018"
+edition= "2021"
 Rust native RAR extractor based upon nom
 """
 exclude = [
@@ -15,8 +15,8 @@ exclude = [
 ]
 
 [dependencies]
-nom = "4.0.0"
-failure = "0.1.1"
-lazy_static = "1.1.0"
-chrono = "0.4.5"
+nom = "4.2.3"
+failure = "0.1.8"
+lazy_static = "1.4.0"
+chrono = "0.4.37"
 rust-crypto = "0.2.36"

@@ -1,5 +1,4 @@
-use chrono::naive::NaiveDateTime;
-use nom;
+use chrono::NaiveDateTime;
 use util;
 use vint;
 
@@ -24,7 +23,7 @@ impl ExtraAreaBlock {
         };
 
         // parse all the different extra blocks after each other
-        while inp.len() > 0 {
+        while !inp.is_empty() {
             let (i, size) = vint::vint(inp)?;
             let (i, typ) = vint::vint(i)?;
             let (i, data) = take!(i, size - 1)?;
@@ -151,6 +150,7 @@ impl FileTimeBlock {
     }
 
     /// Parses a timestamp from the byte slice from a unix or windows format
+    #[allow(deprecated)]
     fn parse_timestamp(
         input: &[u8],
         unix_time: bool,
@@ -222,7 +222,7 @@ impl FileEncryptionBlock {
         let mut pw_check = [0; 12];
         if flags.pw_check_data {
             let (i, p) = take!(inp, 12)?;
-            pw_check.copy_from_slice(&p);
+            pw_check.copy_from_slice(p);
             inp = i;
         }
 
@@ -235,8 +235,8 @@ impl FileEncryptionBlock {
             pw_check,
         };
 
-        feb.salt.copy_from_slice(&salt);
-        feb.init.copy_from_slice(&init);
+        feb.salt.copy_from_slice(salt);
+        feb.init.copy_from_slice(init);
 
         Ok((inp, feb))
     }
@@ -271,8 +271,9 @@ fn test_file_encryption_parse() {
 
 /// File Encryption Block which gives the necessary
 /// Information about the encrypted file.
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub enum FileEncryptionVersion {
+    #[default]
     Aes256,
     Unknown,
 }
@@ -288,12 +289,6 @@ impl FileEncryptionVersion {
     }
 }
 
-impl Default for FileEncryptionVersion {
-    fn default() -> FileEncryptionVersion {
-        FileEncryptionVersion::Aes256
-    }
-}
-
 /// File Encryption Block Flags which gives informaton
 /// about how the decrypt the file
 #[derive(PartialEq, Debug, Clone, Default)]
@@ -303,6 +298,7 @@ pub struct FileEncryptionBlockFlags {
 }
 
 impl FileEncryptionBlockFlags {
+    #[allow(clippy::field_reassign_with_default)]
     fn parse(input: &[u8]) -> nom::IResult<&[u8], FileEncryptionBlockFlags> {
         // Parse flags
         let (inp, flags) = vint::vint(input)?;

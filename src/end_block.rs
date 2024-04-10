@@ -1,5 +1,4 @@
 use head_block::HeadBlock;
-use nom;
 use util::to_bool;
 use vint::vint;
 

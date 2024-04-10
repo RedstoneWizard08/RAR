@@ -42,9 +42,9 @@ pub struct Archive {
 impl Archive {
     /// This function extracts the .rar archive and returns the parsed
     /// structure as additional information
-    pub fn extract_all(file_name: &str, path: &str, password: &str) -> Result<Archive, Error> {
+    pub fn extract_all(file_name: &str, path: &str, password: Option<&str>) -> Result<Archive, Error> {
         // Open a file reader
-        let reader = File::open(&file_name)?;
+        let reader = File::open(file_name)?;
         // initilize the buffer
         let mut reader = RarReader::new_from_file(reader);
 
@@ -60,7 +60,9 @@ impl Archive {
         let mut files = vec![];
         let mut quick_open = None;
         let mut file_number = 1;
+        
         // loop over the packages and define how to handle them
+        #[allow(clippy::while_let_loop)]
         loop {
             // Check if the next is a file
             match reader.exec_nom_parser(file_block::FileBlock::parse) {
@@ -85,7 +87,7 @@ impl Archive {
                         reader = extractor::continue_data_next_file(
                             reader,
                             &mut f,
-                            &file_name,
+                            file_name,
                             &mut file_number,
                             &mut data_area_size,
                         )?;
@@ -152,7 +154,7 @@ mod tests {
         let archive = Archive::extract_all(
             &format!("assets/{}.rar", rar),
             &format!("target/rar-test/{}/", rar),
-            "test",
+            Some("test"),
         )
         .unwrap();
 
@@ -172,7 +174,7 @@ mod tests {
         let archive = Archive::extract_all(
             "assets/rar5-save-32mb-txt-png.rar",
             "target/rar-test/rar5-save-32mb-txt-png/",
-            "test",
+            Some("test"),
         )
         .unwrap();
 
@@ -199,7 +201,7 @@ mod tests {
         let archive = Archive::extract_all(
             "assets/rar5-save-32mb-txt-png-pw-test.rar",
             "target/rar-test/rar5-save-32mb-txt-png-pw-test/",
-            "test",
+            Some("test"),
         )
         .unwrap();
 
@@ -226,7 +228,7 @@ mod tests {
         let archive = Archive::extract_all(
             "assets/rar5-save-32mb-txt-png-512kb.part1.rar",
             "target/rar-test/rar5-save-32mb-txt-png-512kb/",
-            "test",
+            Some("test"),
         )
         .unwrap();
 

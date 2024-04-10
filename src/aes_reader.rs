@@ -30,10 +30,11 @@ pub struct RarAesReader<R: Read> {
 
 impl<R: Read> RarAesReader<R> {
     /// Create a new decryption reader
-    pub fn new(reader: R, file: FileBlock, pwd: &str) -> RarAesReader<R> {
+    pub fn new(reader: R, file: FileBlock, pwd: Option<&str>) -> RarAesReader<R> {
         let mut key = [0u8; 32];
         let mut active = false;
         let mut feb = FileEncryptionBlock::default();
+
         if let Some(f) = file.extra.file_encryption {
             key = generate_key(&f, pwd);
             active = true;
@@ -192,7 +193,7 @@ impl<R: Read + Seek> Seek for RarAesReader<R> {
 }
 
 /// Generate the decryption key from the encryption block infos
-fn generate_key(feb: &FileEncryptionBlock, pwd: &str) -> [u8; 32] {
+fn generate_key(feb: &FileEncryptionBlock, pwd: Option<&str>) -> [u8; 32] {
     // calculate the hashing iterations
     let iter_number = 2u32.pow(feb.kdf_count.into());
 
@@ -200,7 +201,7 @@ fn generate_key(feb: &FileEncryptionBlock, pwd: &str) -> [u8; 32] {
     let mut key = [0u8; 32];
 
     // define the hashing type and pwd
-    let mut mac = Hmac::new(Sha256::new(), pwd.as_bytes());
+    let mut mac = Hmac::new(Sha256::new(), pwd.unwrap_or_default().as_bytes());
 
     // hash the key
     pbkdf2(&mut mac, &feb.salt, iter_number, &mut key);
@@ -215,7 +216,7 @@ fn test_aes_stream_disabled() {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x10,
     ];
 
-    let mut reader = RarAesReader::new(&data[..], f, "");
+    let mut reader = RarAesReader::new(&data[..], f, None);
     let mut buffer = vec![];
 
     reader.read_to_end(&mut buffer).unwrap();

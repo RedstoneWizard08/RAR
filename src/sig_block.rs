@@ -1,5 +1,3 @@
-use nom;
-
 /// Signature of the .rar File. It can be either RAR5 or RAR4
 #[derive(PartialEq, Debug, Clone)]
 pub enum SignatureBlock {

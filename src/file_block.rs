@@ -1,6 +1,5 @@
 use extra_block::ExtraAreaBlock;
 use head_block::HeadBlock;
-use nom;
 use nom::be_u32;
 use util::{get_bit_at, split_u64, to_bool};
 use vint::vint;
@@ -57,7 +56,7 @@ impl FileBlock {
             attributes,
             mtime: 0,
             data_crc: 0,
-            compression: compression,
+            compression,
             creation_os: OsFlags::UNKNOWN,
             name_len: 0,
             name: "".into(),
@@ -103,7 +102,7 @@ impl FileBlock {
 
 #[test]
 fn test_archive() {
-    use chrono::naive::NaiveDateTime;
+    use chrono::NaiveDateTime;
 
     // test a success case
     let data = [
@@ -157,7 +156,7 @@ fn test_archive() {
 }
 #[test]
 fn test_archive_png() {
-    use chrono::naive::NaiveDateTime;
+    use chrono::NaiveDateTime;
 
     // test a success case
     let data = [
@@ -242,10 +241,13 @@ impl From<u64> for FileFlags {
 }
 
 /// OS flags
-#[derive(PartialEq, Debug, Clone)]
+#[allow(clippy::upper_case_acronyms)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub enum OsFlags {
     WINDOWS,
     UNIX,
+
+    #[default]
     UNKNOWN,
 }
 
@@ -257,12 +259,6 @@ impl From<u64> for OsFlags {
         if i == 0 {
             return OsFlags::UNIX;
         }
-        OsFlags::UNKNOWN
-    }
-}
-
-impl Default for OsFlags {
-    fn default() -> OsFlags {
         OsFlags::UNKNOWN
     }
 }
@@ -351,7 +347,7 @@ fn test_get_directonary() {
 }
 
 /// Compression Flags
-#[derive(PartialEq, Debug, Clone)]
+#[derive(PartialEq, Debug, Clone, Default)]
 pub enum CompressionFlags {
     Save,
     Fastest,
@@ -359,6 +355,8 @@ pub enum CompressionFlags {
     Normal,
     Good,
     Best,
+
+    #[default]
     Unknown,
 }
 
@@ -382,12 +380,6 @@ impl From<u8> for CompressionFlags {
         if i == 5 {
             return CompressionFlags::Best;
         }
-        CompressionFlags::Unknown
-    }
-}
-
-impl Default for CompressionFlags {
-    fn default() -> CompressionFlags {
         CompressionFlags::Unknown
     }
 }

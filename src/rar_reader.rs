@@ -1,5 +1,3 @@
-use failure;
-use nom;
 use std::io;
 use std::io::{BufRead, BufReader, Read};
 

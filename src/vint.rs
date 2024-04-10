@@ -1,5 +1,3 @@
-use nom;
-
 /// Returns the next complete vint number as u64.
 pub fn vint(input: &[u8]) -> nom::IResult<&[u8], u64> {
     let mut out: u64;
@@ -11,7 +9,7 @@ pub fn vint(input: &[u8]) -> nom::IResult<&[u8], u64> {
             // get just the data bit's from the collection
             let coll =
                 v.1.iter()
-                    .map(|x| split_vint(x.clone()).1 as u64)
+                    .map(|x| split_vint(*x).1 as u64)
                     .collect::<Vec<u64>>();
             let mut len = coll.len();
 
@@ -26,7 +24,7 @@ pub fn vint(input: &[u8]) -> nom::IResult<&[u8], u64> {
             // afterwards we are looping in a reversed order over the collection
             // to push all the remaining bits to our vint
             for i in coll.iter().rev() {
-                out = out << 7;
+                out <<= 7;
                 out += i;
             }
 

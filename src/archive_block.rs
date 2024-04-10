@@ -1,5 +1,4 @@
 use head_block::HeadBlock;
-use nom;
 use util::get_bit_at;
 use vint::vint;
 

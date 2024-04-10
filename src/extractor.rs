@@ -4,7 +4,6 @@ use file_block::FileBlock;
 use file_writer::FileWriter;
 use rar_reader::RarReader;
 use std::io::prelude::*;
-use std::io::Read;
 
 /// This function extracts the data from a RarReader and writes it into an file.
 pub fn extract(
@@ -12,10 +11,10 @@ pub fn extract(
     path: &str,
     reader: &mut RarReader,
     data_area_size: u64,
-    password: &str,
+    password: Option<&str>,
 ) -> Result<(), Error> {
     // create file writer to create and fill the file
-    let mut f_writer = FileWriter::new(file.clone(), &path)?;
+    let mut f_writer = FileWriter::new(file.clone(), path)?;
 
     // Limit the data to take from the reader
     let reader = RarReader::new(reader.take(data_area_size));
@@ -31,7 +30,7 @@ pub fn extract(
         let data = &mut data_buffer[..new_byte_count];
 
         // end loop if nothing is there anymore
-        if new_byte_count <= 0 {
+        if new_byte_count == 0 {
             break;
         }
 
@@ -39,7 +38,7 @@ pub fn extract(
         // todo
 
         // write out the data
-        if let Err(e) = f_writer.write_all(&data) {
+        if let Err(e) = f_writer.write_all(data) {
             if e.kind() == ::std::io::ErrorKind::WriteZero {
                 // end loop when the file capacity is reached
                 break;
