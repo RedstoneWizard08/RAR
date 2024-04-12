@@ -30,7 +30,7 @@ fn test_rar_signature() {
 }
 
 // get a rar 5 file signature
-named!(rar5_signature(&[u8]) -> (&[u8], &[u8]), 
+named!(rar5_signature(&[u8]) -> (&[u8], &[u8]),
     pair!(rar_pre_signature, tag!([0x1A, 0x07, 0x01, 0x00]))
 );
 #[test]
@@ -42,7 +42,7 @@ fn test_rar5_signature() {
 }
 
 // get a rar 4 file signature
-named!(rar4_signature(&[u8]) -> (&[u8], &[u8]), 
+named!(rar4_signature(&[u8]) -> (&[u8], &[u8]),
     pair!(rar_pre_signature, tag!([0x1A, 0x07, 0x00]))
 );
 #[test]

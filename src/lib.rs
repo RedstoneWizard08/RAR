@@ -42,7 +42,11 @@ pub struct Archive {
 impl Archive {
     /// This function extracts the .rar archive and returns the parsed
     /// structure as additional information
-    pub fn extract_all(file_name: &str, path: &str, password: Option<&str>) -> Result<Archive, Error> {
+    pub fn extract_all(
+        file_name: &str,
+        path: &str,
+        password: Option<&str>,
+    ) -> Result<Archive, Error> {
         // Open a file reader
         let reader = File::open(file_name)?;
         // initilize the buffer
@@ -60,7 +64,7 @@ impl Archive {
         let mut files = vec![];
         let mut quick_open = None;
         let mut file_number = 1;
-        
+
         // loop over the packages and define how to handle them
         #[allow(clippy::while_let_loop)]
         loop {
